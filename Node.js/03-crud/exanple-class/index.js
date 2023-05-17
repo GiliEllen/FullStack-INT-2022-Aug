@@ -21,27 +21,28 @@ mongoose
     console.log(`at mongoose connect: ${err.message}`);
   });
 
+  app.get("/api/tours", async (req, res) => {
+    try {
+      const toursDB = await TourModel.find();
+      res.send({ok: true, toursDB})
+    } catch (error) {
+      console.log(error.message);
+      res.status(500).send({ ok: false, error: error.message });
+    }
+  })
+
 app.post("/api/tours", async (req, res) => {
-  //   if (!tourName || !price || !imgURL) {
-  //     res
-  //       .status(500)
-  //       .send({
-  //         ok: false,
-  //         error:
-  //           "no tourName, price, imgURL from client on server in post(/api/tours)",
-  //       });
-  //   }
   try {
-    console.log(req.body);
     var { tourName, price, imgURL } = req.body;
     if (!tourName || !price || !imgURL)
       throw new Error(
         "no tourName, price, imgURL from client on server in post(/api/tours)"
       );
     var tourDB = new TourModel({ tourName, price, imgURL });
-    const check = await tourDB.save();
-      res.send({ ok: true, tourDB });
+    await tourDB.save();
+    res.send({ ok: true, tourDB });
   } catch (error) {
+    console.log(error.message);
     res.status(500).send({ ok: false, error: error.message });
   }
 });
